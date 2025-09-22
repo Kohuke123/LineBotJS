@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Code Runner</title>
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="stylesheet" crossorigin href="./assets/index-pWRaTk2f.css">
+  </head>
+  <body>
+    <div class="grid">
+      <!-- left column: controls above syntax + console -->
+      <div class="left-col">
+        <div class="controls" id="controls">
+          <button id="runBtn">Run</button>
+          <button id="stopBtn">Stop</button>
+          <button id="saveBtn">Save</button>
+          <button id="loadBtn">Load</button>
+          <button id="resetBtn">Reset</button>
+        </div>
+
+        <div class="syntax-card" aria-labelledby="syntax-title">
+          <h2 id="syntax-title">Syntax — Quick reference</h2>
+          <div class="syntax-body">
+            <div class="syntax-item">
+              <code class="kw">SET LEFT N</code>
+              <div class="desc">set left wheel speed to N (negative = reverse)</div>
+            </div>
+
+            <div class="syntax-item">
+              <code class="kw">SET RIGHT N</code>
+              <div class="desc">set right wheel speed to N (negative = reverse)</div>
+            </div>
+
+            <div class="syntax-item">
+              <code class="kw">WAIT T</code>
+              <div class="desc">wait T milliseconds before executing the next command</div>
+            </div>
+
+            <div class="syntax-item">
+              <code class="kw">STOP</code>
+              <div class="desc">stop both wheels immediately</div>
+            </div>
+
+            <div class="syntax-item">
+              <code class="kw">SENSOR_LEFT</code>
+              <div class="desc">left sensor value (distance along left ray)</div>
+            </div>
+
+            <div class="syntax-item">
+              <code class="kw">SENSOR_RIGHT</code>
+              <div class="desc">right sensor value (distance along right ray)</div>
+            </div>
+
+            <div class="syntax-item">
+              <code class="kw">SENSOR_CENTER</code>
+              <div class="desc">center sensor value (distance along center ray)</div>
+            </div>
+
+            <div class="syntax-item">
+              <code class="kw">IF ...</code>
+              <div class="desc">if condition is true, execute the following commands</div>
+            </div>
+
+            <div class="syntax-item">
+              <code class="kw">ELSE IF ...</code>
+              <div class="desc">if previous IF/ELSE IF was false, check this condition</div>
+            </div>
+
+            <div class="syntax-item">
+              <code class="kw">ELSE</code>
+              <div class="desc">if none of the previous conditions match, execute these commands</div>
+            </div>
+
+            <div class="syntax-item">
+              <code class="kw">#</code>
+              <div class="desc">comment — ignored by the robot (for humans)</div>
+            </div>
+
+            <div class="syntax-item">
+              <code class="kw">END</code>
+              <div class="desc">end / loop</div>
+            </div>
+
+            <div class="syntax-item small">
+              <code class="kw op">&lt;</code>
+              <code class="kw op">&gt;</code>
+              <code class="kw op">=</code>
+              <div class="desc">operators: &lt; (less than), &gt; (greater than), = (equal)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- console under the syntax reference -->
+        <pre id="log" class="console" aria-live="polite"></pre>
+      </div>
+
+      <!-- right column: editor, then canvas -->
+      <div class="right-col">
+        <div class="editor" id="editor"></div>
+        <canvas class="canvas" id="canvas" width="600" height="300"></canvas>
+      </div>
+    </div>
+
+    <!-- Monaco AMD loader -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
+
+    <!-- Load Monaco, then load robot.js and main.js (robot first so its globals exist for main) -->
+    <script>
+      require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs' } });
+
+      require(['vs/editor/editor.main'], function() {
+        // load robot.js first (defines drawRobot, resetRobot, etc.)
+        var r = document.createElement('script');
+        r.async = false;           // preserve order for dynamically added scripts
+        r.src = 'src/robot.js';
+        document.body.appendChild(r);
+
+        // then load main.js (uses monaco and robot functions)
+        var s = document.createElement('script');
+        s.async = false;
+        s.src = 'src/main.js';
+        document.body.appendChild(s);
+
+        var s = document.createElement('script');
+        s.async = false;
+        s.src = 'src/display.js';
+        document.body.appendChild(s);
+      });
+    </script>
+  </body>
+</html>
