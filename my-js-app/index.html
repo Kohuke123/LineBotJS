@@ -4,9 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Code Runner</title>
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <link rel="stylesheet" href="/src/style.css" />
-    <link rel="stylesheet" href="/src/syntax.css" />
+    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./syntax.css" />
   </head>
   <body>
     <div class="grid">
@@ -114,18 +113,13 @@
         // load robot.js first (defines drawRobot, resetRobot, etc.)
         var r = document.createElement('script');
         r.async = false;           // preserve order for dynamically added scripts
-        r.src = 'src/robot.js';
+        r.src = 'robot.js';
         document.body.appendChild(r);
 
         // then load main.js (uses monaco and robot functions)
         var s = document.createElement('script');
         s.async = false;
-        s.src = 'src/main.js';
-        document.body.appendChild(s);
-
-        var s = document.createElement('script');
-        s.async = false;
-        s.src = 'src/display.js';
+        s.src = 'main.js';
         document.body.appendChild(s);
       });
     </script>
