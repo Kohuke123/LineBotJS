@@ -4,8 +4,21 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Code Runner</title>
-    <link rel="stylesheet" href="./style.css" />
-    <link rel="stylesheet" href="./syntax.css" />
+
+    <!-- Monaco AMD loader + worker shim (CDN) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
+    <script>
+      require.config({ paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs' }});
+      self.MonacoEnvironment = {
+        getWorkerUrl() {
+          const code = `
+            self.MonacoEnvironment = { baseUrl: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/' };
+            importScripts('https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/base/worker/workerMain.js');
+          `;
+          return URL.createObjectURL(new Blob([code], { type: 'text/javascript' }));
+        }
+      };
+    </script>
   </head>
   <body>
     <div class="grid">
@@ -102,26 +115,7 @@
       </div>
     </div>
 
-    <!-- Monaco AMD loader -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
-
-    <!-- Load Monaco, then load robot.js and main.js (robot first so its globals exist for main) -->
-    <script>
-      require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs' } });
-
-      require(['vs/editor/editor.main'], function() {
-        // load robot.js first (defines drawRobot, resetRobot, etc.)
-        var r = document.createElement('script');
-        r.async = false;           // preserve order for dynamically added scripts
-        r.src = 'robot.js';
-        document.body.appendChild(r);
-
-        // then load main.js (uses monaco and robot functions)
-        var s = document.createElement('script');
-        s.async = false;
-        s.src = 'main.js';
-        document.body.appendChild(s);
-      });
-    </script>
+    <!-- Vite entry: bundle imports (CSS + JS) via src/main.js -->
+    <script type="module" src="/src/main.js"></script>
   </body>
 </html>
