@@ -2,8 +2,8 @@
 import './style.css';
 import './syntax.css';
 
-// Load robot sim code (defines drawRobot, resetRobot, parseProgram, etc.)
-import './robot.js';
+// Load robot sim code (named exports)
+import { loadProgramFromText, programState, resetRobot, drawRobot, drawObstacles } from './robot.js';
 
 // Put all editor/DOM wiring inside boot() so we start only after Monaco is loaded.
 function boot() {
@@ -58,9 +58,8 @@ function boot() {
     running.stop = false;
     try {
       var userCode = editor.getValue();
-      // parse into immutable AST, then clone into the executable program
-      ast = parseProgram(userCode);
-      program = clone(ast);
+      // parse into immutable AST, then clone into the executable program (module handles cloning)
+      const ast = loadProgramFromText(userCode);
 
       // helper: count leaf actions (expand IFs) for clearer diagnostics
       function countLeafActions(list){
@@ -92,7 +91,7 @@ function boot() {
   });
 
   document.getElementById('stopBtn').addEventListener('click', function(){
-      // signal stop; user code must check stopObj.stop to exit loops
+      // signal stop
       running.stop = true;
       programState(running.stop);
       log('Stop requested.');
@@ -122,7 +121,8 @@ function boot() {
   });
 
   document.getElementById('resetBtn').addEventListener('click', () => {
-    stopping = true;
+    // stop the simulation via exported API, then reset/draw
+    programState(true);
     resetRobot();
     ctx.clearRect(0,0,canvas.width,canvas.height);
     drawRobot();

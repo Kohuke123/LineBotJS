@@ -75,7 +75,7 @@ const wallTriangles = [
 //--------------------------------------
 // Drawing helpers
 //--------------------------------------
-function drawRobot(){
+export function drawRobot(){
   const s = ROBOT_SIZE;
   ctx.save();
   ctx.translate(robot.x, robot.y);
@@ -90,7 +90,7 @@ function drawRobot(){
   ctx.restore();
 }
 
-function drawObstacles(){
+export function drawObstacles(){
   ctx.save();
   ctx.fillStyle = '#444';
 
@@ -400,9 +400,9 @@ function pointSegDist(p, a, b){
   return Math.hypot(dx, dy);
 }
 
-//--------------------------------------
+// --------------------------------------
 // DSL Parser  (numbers are PIXELS by default → converted to UNITS)
-//--------------------------------------
+// --------------------------------------
 function parseProgram(text){
   const lines = text.split(/\r?\n/);
   let i = 0;
@@ -514,6 +514,20 @@ function parseProgram(text){
 
 function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
 
+// cheap deep clone helper (use structuredClone if available)
+export const clone = (o) => (typeof structuredClone === 'function'
+  ? structuredClone(o)
+  : JSON.parse(JSON.stringify(o)));
+
+// Add a loader that parses user text and installs ast/program inside this module.
+// Returns the parsed AST for callers that want to inspect it.
+export function loadProgramFromText(text){
+  const parsed = parseProgram(text);
+  ast = parsed;
+  program = clone(parsed);
+  return parsed;
+}
+
 //--------------------------------------
 // Runner (auto-looping program + step budget)
 //--------------------------------------
@@ -527,12 +541,8 @@ let waitLeftMs = 0;
 let lastTime = 0;
 let stopping = false;
 
-// cheap deep clone helper (use structuredClone if available)
-const clone = (o) => (typeof structuredClone === 'function'
-  ? structuredClone(o)
-  : JSON.parse(JSON.stringify(o)));
-
-function resetRobot(){
+// export simulation control / draw helpers so main.js can call them
+export function resetRobot(){
   robot.x = canvas.width  * 0.5;
   robot.y = canvas.height * 0.5;
   robot.heading = 0;
@@ -540,7 +550,7 @@ function resetRobot(){
   robot.rightSpeed = 0;
 }
 
-function programState(state){
+export function programState(state){
   if (state === false){
     stopping = false;
     pc = 0;
