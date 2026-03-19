@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Code Runner</title>
+    <title>UwU Kitten Sandra Robot Simulator</title>
 
     <!-- Monaco AMD loader + worker shim (CDN) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
@@ -21,98 +21,240 @@
     </script>
   </head>
   <body>
-    <div class="grid">
-      <!-- left column: controls above syntax + console -->
-      <div class="left-col">
-        <div class="controls" id="controls">
-          <button id="runBtn">Run</button>
-          <button id="stopBtn">Stop</button>
-          <button id="saveBtn">Save</button>
-          <button id="loadBtn">Load</button>
-          <button id="resetBtn">Reset</button>
+
+    <div id="bg-floaties" aria-hidden="true"></div>
+
+    <!-- ── Outer Win98 window ── -->
+    <div class="win-window">
+
+      <!-- Title bar -->
+      <div class="win-titlebar">
+        <span class="win-titlebar-label">🎀 UwU Kitten Sandra Robot Simulator</span>
+        <div class="win-titlebar-btns">
+          <button class="win-btn" tabindex="-1" aria-hidden="true">─</button>
+          <button class="win-btn" tabindex="-1" aria-hidden="true">□</button>
+          <button class="win-btn win-btn-close" tabindex="-1" aria-hidden="true">✕</button>
         </div>
+      </div>
 
-        <div class="syntax-card" aria-labelledby="syntax-title">
-          <h2 id="syntax-title">Syntax — Quick reference</h2>
-          <div class="syntax-body">
-            <div class="syntax-item">
-              <code class="kw">SET LEFT N</code>
-              <div class="desc">set left wheel speed to N (negative = reverse)</div>
+      <!-- Tab bar -->
+      <div class="tab-bar" role="tablist">
+        <button class="tab-btn active" role="tab" aria-selected="true"  data-tab="beginner">🎀 Beginner</button>
+        <button class="tab-btn"        role="tab" aria-selected="false" data-tab="advanced">⚙️ Advanced</button>
+      </div>
+
+      <!-- ════ BEGINNER tab ════ -->
+      <div class="tab-panel active" id="tab-beginner" role="tabpanel">
+        <div class="grid">
+
+          <div class="left-col">
+            <div class="controls" id="controls">
+              <button id="runBtn">Run</button>
+              <button id="stopBtn">Stop</button>
             </div>
 
-            <div class="syntax-item">
-              <code class="kw">SET RIGHT N</code>
-              <div class="desc">set right wheel speed to N (negative = reverse)</div>
+            <div class="syntax-card" aria-labelledby="syntax-title-b">
+              <h2 id="syntax-title-b">Syntax — Quick reference</h2>
+              <div class="syntax-body">
+                <div class="syntax-item"><code class="kw">SET LEFT N</code><div class="desc">set left wheel speed to N (negative = reverse)<span class="meta">N: −100 … 100 · default 0</span></div></div>
+                <div class="syntax-item"><code class="kw">SET RIGHT N</code><div class="desc">set right wheel speed to N (negative = reverse)<span class="meta">N: −100 … 100 · default 0</span></div></div>
+                <div class="syntax-item"><code class="kw">WAIT T</code><div class="desc">wait T milliseconds before executing the next command<span class="meta">T: ms · min 1</span></div></div>
+                <div class="syntax-item"><code class="kw">STOP</code><div class="desc">stop both wheels immediately</div></div>
+                <div class="syntax-item"><code class="kw">SENSOR_LEFT</code><div class="desc">left sensor value (distance along left ray)<span class="meta">returns: 0 – 500 · ∞ if nothing in range</span></div></div>
+                <div class="syntax-item"><code class="kw">SENSOR_RIGHT</code><div class="desc">right sensor value (distance along right ray)<span class="meta">returns: 0 – 500 · ∞ if nothing in range</span></div></div>
+                <div class="syntax-item"><code class="kw">SENSOR_CENTER</code><div class="desc">center sensor value (distance along center ray)<span class="meta">returns: 0 – 500 · ∞ if nothing in range</span></div></div>
+                <div class="syntax-item"><code class="kw">IF ...</code><div class="desc">if condition is true, execute the following commands</div></div>
+                <div class="syntax-item"><code class="kw">ELSE IF ...</code><div class="desc">if previous IF/ELSE IF was false, check this condition</div></div>
+                <div class="syntax-item"><code class="kw">ELSE</code><div class="desc">if none of the previous conditions match, execute these commands</div></div>
+                <div class="syntax-item"><code class="kw">#</code><div class="desc">comment — ignored by the robot (for humans)</div></div>
+                <div class="syntax-item"><code class="kw">END</code><div class="desc">end / loop</div></div>
+                <div class="syntax-item small">
+                  <code class="kw op">&lt;</code><code class="kw op">&gt;</code><code class="kw op">=</code>
+                  <div class="desc">operators: &lt; (less than), &gt; (greater than), = (equal)</div>
+                </div>
+              </div>
             </div>
 
-            <div class="syntax-item">
-              <code class="kw">WAIT T</code>
-              <div class="desc">wait T milliseconds before executing the next command</div>
-            </div>
-
-            <div class="syntax-item">
-              <code class="kw">STOP</code>
-              <div class="desc">stop both wheels immediately</div>
-            </div>
-
-            <div class="syntax-item">
-              <code class="kw">SENSOR_LEFT</code>
-              <div class="desc">left sensor value (distance along left ray)</div>
-            </div>
-
-            <div class="syntax-item">
-              <code class="kw">SENSOR_RIGHT</code>
-              <div class="desc">right sensor value (distance along right ray)</div>
-            </div>
-
-            <div class="syntax-item">
-              <code class="kw">SENSOR_CENTER</code>
-              <div class="desc">center sensor value (distance along center ray)</div>
-            </div>
-
-            <div class="syntax-item">
-              <code class="kw">IF ...</code>
-              <div class="desc">if condition is true, execute the following commands</div>
-            </div>
-
-            <div class="syntax-item">
-              <code class="kw">ELSE IF ...</code>
-              <div class="desc">if previous IF/ELSE IF was false, check this condition</div>
-            </div>
-
-            <div class="syntax-item">
-              <code class="kw">ELSE</code>
-              <div class="desc">if none of the previous conditions match, execute these commands</div>
-            </div>
-
-            <div class="syntax-item">
-              <code class="kw">#</code>
-              <div class="desc">comment — ignored by the robot (for humans)</div>
-            </div>
-
-            <div class="syntax-item">
-              <code class="kw">END</code>
-              <div class="desc">end / loop</div>
-            </div>
-
-            <div class="syntax-item small">
-              <code class="kw op">&lt;</code>
-              <code class="kw op">&gt;</code>
-              <code class="kw op">=</code>
-              <div class="desc">operators: &lt; (less than), &gt; (greater than), = (equal)</div>
+            <div class="console-wrap">
+              <div id="log" class="console" role="log" aria-live="polite"></div>
             </div>
           </div>
+
+          <div class="right-col">
+            <div class="editor" id="editor"></div>
+            <div class="cockpit">
+              <div class="ck-row ck-row-s">
+                <span class="ck-tag">SENSORS</span>
+                <div class="ck-sg">
+                  <span class="ck-sl">L</span>
+                  <span class="ck-sv" id="sr-beg-L">—</span>
+                </div>
+                <div class="ck-dot"></div>
+                <div class="ck-sg">
+                  <span class="ck-sl ck-sl-c">C</span>
+                  <span class="ck-sv ck-sv-c" id="sr-beg-C">—</span>
+                </div>
+                <div class="ck-dot"></div>
+                <div class="ck-sg">
+                  <span class="ck-sl">R</span>
+                  <span class="ck-sv" id="sr-beg-R">—</span>
+                </div>
+              </div>
+              <div class="ck-row ck-row-d">
+                <span class="ck-tag">DRIVE</span>
+                <span class="exec-pill" id="exec-pill-beg" data-status="idle">IDLE</span>
+                <span class="loop-counter" id="loop-counter-beg" hidden></span>
+                <div class="ck-vsep"></div>
+                <span class="ck-wl">L</span>
+                <span class="ck-wv" id="sr-beg-WL" data-neg="false">0</span>
+                <div class="ck-wbar"><div class="ck-wfill" id="sb-beg-WL"></div></div>
+                <div class="ck-wbar ck-wbar-r"><div class="ck-wfill" id="sb-beg-WR"></div></div>
+                <span class="ck-wv" id="sr-beg-WR" data-neg="false">0</span>
+                <span class="ck-wl">R</span>
+                <div class="ck-vsep"></div>
+                <div class="exec-track"><div class="exec-fill" id="exec-fill-beg"></div></div>
+                <span class="exec-time" id="exec-time-beg"></span>
+              </div>
+            </div>
+            <canvas class="canvas" id="canvas" width="700" height="300"></canvas>
+          </div>
+
         </div>
+      </div><!-- #tab-beginner -->
 
-        <!-- console under the syntax reference -->
-        <pre id="log" class="console" aria-live="polite"></pre>
-      </div>
+      <!-- ════ ADVANCED tab ════ -->
+      <div class="tab-panel" id="tab-advanced" role="tabpanel" hidden>
+        <div class="grid">
 
-      <!-- right column: editor, then canvas -->
-      <div class="right-col">
-        <div class="editor" id="editor"></div>
-        <canvas class="canvas" id="canvas" width="600" height="300"></canvas>
+          <div class="left-col">
+            <div class="controls">
+              <button id="runBtn-adv">Run</button>
+              <button id="stopBtn-adv">Stop</button>
+            </div>
+
+
+            <div class="challenge-panel" id="challenge-panel">
+              <h2 class="challenge-title">🏁 Challenge Mode</h2>
+
+              <div class="challenge-row" id="challenge-selector">
+                <button class="challenge-maze-btn active" data-maze="baby">Baby</button>
+                <button class="challenge-maze-btn" data-maze="easy">Easy</button>
+                <button class="challenge-maze-btn" data-maze="medium">Medium</button>
+              </div>
+
+              <div class="challenge-par" id="challenge-par">
+                🥇 Gold: &lt;7s &nbsp; 🥈 Silver: &lt;10s &nbsp; 🥉 Bronze: &lt;15s
+              </div>
+
+
+              <div class="challenge-timer" id="challenge-timer">⏱ —</div>
+
+              <div class="challenge-result" id="challenge-result" hidden></div>
+
+              <div class="challenge-history">
+                <div class="pb-card" id="pb-card">
+                  <div class="pb-medal" id="pb-medal">—</div>
+                  <div class="pb-info">
+                    <div class="pb-label">Personal Best</div>
+                    <div class="pb-time" id="pb-time">—.——s</div>
+                  </div>
+                </div>
+                <div class="next-medal-hint" id="next-medal-hint"></div>
+                <div class="recent-header">
+                  <span>Recent Runs</span>
+                  <button id="challenge-clear-btn">Clear</button>
+                </div>
+                <div id="recent-runs"></div>
+              </div>
+            </div>
+
+            <details class="syntax-card syntax-card-collapsible">
+              <summary id="syntax-title-a">Syntax — Quick reference</summary>
+              <div class="syntax-body">
+                <div class="syntax-item"><code class="kw">SET LEFT N</code><div class="desc">set left wheel speed to N (negative = reverse)<span class="meta">N: −100 … 100 · default 0</span></div></div>
+                <div class="syntax-item"><code class="kw">SET RIGHT N</code><div class="desc">set right wheel speed to N (negative = reverse)<span class="meta">N: −100 … 100 · default 0</span></div></div>
+                <div class="syntax-item"><code class="kw">WAIT T</code><div class="desc">wait T milliseconds before executing the next command<span class="meta">T: ms · min 1</span></div></div>
+                <div class="syntax-item"><code class="kw">STOP</code><div class="desc">stop both wheels immediately</div></div>
+                <div class="syntax-item"><code class="kw">SENSOR_LEFT</code><div class="desc">left sensor value (distance along left ray)<span class="meta">returns: 0 – 500 · ∞ if nothing in range</span></div></div>
+                <div class="syntax-item"><code class="kw">SENSOR_RIGHT</code><div class="desc">right sensor value (distance along right ray)<span class="meta">returns: 0 – 500 · ∞ if nothing in range</span></div></div>
+                <div class="syntax-item"><code class="kw">SENSOR_CENTER</code><div class="desc">center sensor value (distance along center ray)<span class="meta">returns: 0 – 500 · ∞ if nothing in range</span></div></div>
+                <div class="syntax-item"><code class="kw">IF ...</code><div class="desc">if condition is true, execute the following commands</div></div>
+                <div class="syntax-item"><code class="kw">ELSE IF ...</code><div class="desc">if previous IF/ELSE IF was false, check this condition</div></div>
+                <div class="syntax-item"><code class="kw">ELSE</code><div class="desc">if none of the previous conditions match, execute these commands</div></div>
+                <div class="syntax-item"><code class="kw">#</code><div class="desc">comment — ignored by the robot (for humans)</div></div>
+                <div class="syntax-item"><code class="kw">END</code><div class="desc">end / loop</div></div>
+                <div class="syntax-item small">
+                  <code class="kw op">&lt;</code><code class="kw op">&gt;</code><code class="kw op">=</code>
+                  <div class="desc">operators: &lt; (less than), &gt; (greater than), = (equal)</div>
+                </div>
+              </div>
+            </details>
+
+            <div class="console-wrap">
+              <div id="log-advanced" class="console" role="log" aria-live="polite"></div>
+            </div>
+          </div>
+
+          <div class="right-col">
+            <div class="editor" id="editor-advanced"></div>
+            <div class="cockpit">
+              <div class="ck-row ck-row-s">
+                <span class="ck-tag">SENSORS</span>
+                <div class="ck-sg">
+                  <span class="ck-sl">L</span>
+                  <span class="ck-sv" id="sr-adv-L">—</span>
+                </div>
+                <div class="ck-dot"></div>
+                <div class="ck-sg">
+                  <span class="ck-sl ck-sl-c">C</span>
+                  <span class="ck-sv ck-sv-c" id="sr-adv-C">—</span>
+                </div>
+                <div class="ck-dot"></div>
+                <div class="ck-sg">
+                  <span class="ck-sl">R</span>
+                  <span class="ck-sv" id="sr-adv-R">—</span>
+                </div>
+              </div>
+              <div class="ck-row ck-row-d">
+                <span class="ck-tag">DRIVE</span>
+                <span class="exec-pill" id="exec-pill-adv" data-status="idle">IDLE</span>
+                <span class="loop-counter" id="loop-counter-adv" hidden></span>
+                <div class="ck-vsep"></div>
+                <span class="ck-wl">L</span>
+                <span class="ck-wv" id="sr-adv-WL" data-neg="false">0</span>
+                <div class="ck-wbar"><div class="ck-wfill" id="sb-adv-WL"></div></div>
+                <div class="ck-wbar ck-wbar-r"><div class="ck-wfill" id="sb-adv-WR"></div></div>
+                <span class="ck-wv" id="sr-adv-WR" data-neg="false">0</span>
+                <span class="ck-wl">R</span>
+                <div class="ck-vsep"></div>
+                <div class="exec-track"><div class="exec-fill" id="exec-fill-adv"></div></div>
+                <span class="exec-time" id="exec-time-adv"></span>
+              </div>
+            </div>
+            <canvas class="canvas" id="canvas-advanced" width="700" height="300"></canvas>
+          </div>
+
+        </div>
+      </div><!-- #tab-advanced -->
+
+    </div><!-- .win-window -->
+
+    <!-- Finish popup -->
+    <div id="finish-popup" class="finish-popup" hidden>
+      <div class="finish-popup-titlebar">🎀 Challenge Complete! 🎀</div>
+      <div class="finish-popup-sparkles" aria-hidden="true">
+        <span>✨</span><span>💕</span><span>🌸</span><span>⭐</span><span>💖</span><span>🌸</span><span>✨</span>
       </div>
+      <div class="finish-popup-body">
+        <div class="finish-popup-medal" id="finish-popup-medal"></div>
+        <div class="finish-popup-info">
+          <div class="finish-popup-medal-name" id="finish-popup-medal-name"></div>
+          <div class="finish-popup-time" id="finish-popup-time"></div>
+        </div>
+      </div>
+      <div class="finish-popup-tagline" id="finish-popup-tagline"></div>
+      <div class="finish-popup-footer">♥ click to dismiss ♥</div>
+      <div class="finish-popup-progress"><div class="finish-popup-progress-fill" id="finish-popup-progress-fill"></div></div>
     </div>
 
     <!-- Vite entry: bundle imports (CSS + JS) via src/main.js -->
